@@ -47,9 +47,7 @@ class Classification:
         self.improved_f1 = None
 
     def split(self, test_size=0.2, random_state=42):
-        self.df['Class'] = (
-            self.df['Close'] > self.df['Open']
-        ).astype(int)
+        self.df['Class'] = (self.df["Close"] > 0).astype(int)
 
         self.X = self.df[
             ['High', 'Low', 'Volume', 'Year', 'Month', 'Day']
@@ -130,59 +128,7 @@ class Classification:
         print('Recall:', self.recall)
         print('F1:', self.f1)
 
-    def improve_model(self):
-        self.improved_model = LogisticRegression(
-            class_weight='balanced'
-        )
-
-        self.improved_model.fit(
-            self.X_train,
-            self.y_train
-        )
-
-        self.improved_y_pred = self.improved_model.predict(
-            self.X_test
-        )
-
-        self.improved_accuracy = accuracy_score(
-            self.y_test,
-            self.improved_y_pred
-        )
-
-        self.improved_cm = confusion_matrix(
-            self.y_test,
-            self.improved_y_pred
-        )
-
-        self.improved_precision = precision_score(
-            self.y_test,
-            self.improved_y_pred
-        )
-
-        self.improved_recall = recall_score(
-            self.y_test,
-            self.improved_y_pred
-        )
-
-        self.improved_f1 = f1_score(
-            self.y_test,
-            self.improved_y_pred
-        )
-
-        print('\n==========================================')
-        print('УЛУЧШЕННАЯ КЛАССИФИКАЦИЯ')
-        print('==========================================')
-
-        print('\nAccuracy:', self.improved_accuracy)
-
-        print('\nConfusion Matrix:')
-        print(self.improved_cm)
-
-        print('\nPrecision:', self.improved_precision)
-        print('Recall:', self.improved_recall)
-        print('F1:', self.improved_f1)
-
-    def draw(self):
+    def drawErrors(self):
         plt.figure(figsize=(4, 3))
 
         sns.heatmap(
@@ -198,46 +144,26 @@ class Classification:
 
         plt.show()
 
-    def draw_improved(self):
-        plt.figure(figsize=(4, 3))
+    def draw_classes(self):
+        counts = self.y.value_counts().sort_index()
 
-        sns.heatmap(
-            self.improved_cm,
-            annot=True,
-            fmt='d',
-            cmap='Blues'
-        )
+        plt.figure(figsize=(5, 4))
+        plt.bar(['Class 0', 'Class 1'], counts.values)
 
-        plt.title('Improved confusion matrix')
-        plt.ylabel('True label')
-        plt.xlabel('Predicted label')
+        plt.title('Распределение классов')
+        plt.xlabel('Класс')
+        plt.ylabel('Количество объектов')
 
         plt.show()
 
-    def draw_sigmoid(self):
-        x = np.linspace(-10, 10, 100)
-
-        y = 1 / (1 + np.exp(-x))
-
-        plt.figure(figsize=(8, 5))
-
-        plt.plot(x, y)
-
-        plt.axhline(0.5)
-        plt.axvline(0)
-
-        plt.xlabel('x')
-        plt.ylabel('Probability')
-        plt.title('Sigmoid function')
-
-        plt.show()
+    def draw(self):
+        self.drawErrors()
+        self.draw_classes()
 
 classification = Classification()
 
 classification.init_model()
-classification.improve_model()
 
 classification.draw()
-classification.draw_improved()
-classification.draw_sigmoid()
+
 

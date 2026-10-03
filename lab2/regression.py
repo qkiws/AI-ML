@@ -97,28 +97,35 @@ class Regression:
         print('RMSE:', self.rmse)
         print('MAE:', self.mae)
 
-    def draw(self):
-        plt.figure(figsize=(10, 5))
+    def draw_predict(self):
+        plt.figure(figsize=(10, 7))
 
         plt.scatter(
-            range(len(self.y_test)),
             self.y_test,
-            label='Настоящие значения'
+            self.y_pred,
+            s=20,
+            label="Предсказания"
         )
+
+        min_value = min(self.y_test.min(), self.y_pred.min())
+        max_value = max(self.y_test.max(), self.y_pred.max())
 
         plt.plot(
-            range(len(self.y_pred)),
-            self.y_pred,
-            label='Предсказанные значения'
+            [min_value, max_value],
+            [min_value, max_value],
+            label="Идеальное предсказание"
         )
 
-        plt.xlabel('Номер наблюдения')
-        plt.ylabel('Close')
-        plt.title('Линейная регрессия')
+        plt.xlabel("Настоящие значения")
+        plt.ylabel("Предсказанные значения")
+        plt.title("Настоящие значения и предсказания")
+
         plt.legend()
+        plt.grid()
 
         plt.show()
 
+    def draw_errors(self):
         plt.figure(figsize=(10, 5))
 
         plt.scatter(
@@ -133,6 +140,10 @@ class Regression:
         plt.title('Ошибки линейной регрессии')
 
         plt.show()
+
+    def draw(self):
+        self.draw_predict()
+        self.draw_errors()
 
 
 regression = Regression()
