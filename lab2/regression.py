@@ -97,6 +97,68 @@ class Regression:
         print('RMSE:', self.rmse)
         print('MAE:', self.mae)
 
+    def check_errors(self):
+        print('\n\n\nОтдельный блок для оценки переобучения')
+        print('\nКоэффы:', self.model.coef_)
+        y_train_pred = self.model.predict(self.X_train)
+        y_test_pred = self.model.predict(self.X_test)
+
+        train_mse = mean_squared_error(self.y_train, y_train_pred)
+        test_mse = mean_squared_error(self.y_test, y_test_pred)
+
+        train_rmse = pow(train_mse, 1/2)
+        test_rmse = pow(test_mse, 1/2)
+
+        train_mae = mean_absolute_error(self.y_train, y_train_pred)
+        test_mae = mean_absolute_error(self.y_test, y_test_pred)
+
+        print("Train MSE:", train_mse)
+        print("Test MSE:", test_mse)
+
+        print("Train RMSE:", train_rmse)
+        print("Test RMSE:", test_rmse)
+
+        print("Train MAE:", train_mae)
+        print("Test MAE:", test_mae)
+
+    def draw_MSE(self):
+        
+        train_pred = self.model.predict(self.X_train)
+        test_pred = self.model.predict(self.X_test)
+
+        train_mse = mean_squared_error(self.y_train, train_pred)
+        test_mse = mean_squared_error(self.y_test, test_pred)
+
+        plt.figure(figsize=(6, 4))
+
+        plt.bar(
+            ['Train', 'Test'],
+            [train_mse, test_mse]
+        )
+
+        plt.title('MSE на обучающей и тестовой выборках')
+        plt.ylabel('MSE')
+
+        plt.show()
+
+        errors = self.y_test - self.y_pred
+
+    def draw_errors(self):
+        plt.figure(figsize=(10, 4))
+        plt.scatter(
+            range(len(self.errors)),
+            self.errors,
+            s=15
+        )
+
+        plt.axhline(0)
+
+        plt.title('Ошибки модели на тестовой выборке')
+        plt.xlabel('Номер объекта')
+        plt.ylabel('Ошибка')
+
+        plt.grid()
+        plt.show()
     def draw_predict(self):
         plt.figure(figsize=(10, 7))
 
@@ -125,28 +187,16 @@ class Regression:
 
         plt.show()
 
-    def draw_errors(self):
-        plt.figure(figsize=(10, 5))
-
-        plt.scatter(
-            range(len(self.errors)),
-            self.errors
-        )
-
-        plt.axhline(0)
-
-        plt.xlabel('Номер наблюдения')
-        plt.ylabel('Ошибка')
-        plt.title('Ошибки линейной регрессии')
-
-        plt.show()
-
     def draw(self):
         self.draw_predict()
         self.draw_errors()
+        self.draw_MSE()
 
 
 regression = Regression()
 
 regression.init_model()
+
+regression.check_errors()
+
 regression.draw()
